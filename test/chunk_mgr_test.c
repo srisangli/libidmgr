@@ -61,7 +61,7 @@ void test_check_free_id_inst_internal(void)
 
     for(i = 0; i < 5; i++)
     {
-        ch2->id_list[i].ref_count == i + 1;
+        ch2->id_list[i].ref_count = i + 1;
     }
     assert(check_free_id_count_internal(ch2) == 27); // 5 cannot be GCed
 
@@ -69,7 +69,7 @@ void test_check_free_id_inst_internal(void)
     for(i = 0; i < 5; i++)
     {
         ch2->id_list[i].ref_count = 0;
-        ch2->id_list[i].deleted_at == epoch_time;
+        ch2->id_list[i].deleted_at = current;
     }
     assert(check_free_id_count_internal(ch2) == 27); // 5 cannot be GCed
 
