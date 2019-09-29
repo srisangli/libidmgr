@@ -1,0 +1,18 @@
+
+BUILD & RUN INSTRUCTIONS:
+
+Makefile is written for following targets:
+
+1. libidmgr.a 
+2. unittest
+
+Unit Testing:
+Following classes of unittests are implemented:
+1. chunk_mgr Unit-test
+2. AVL Tree Unit-test
+3. IDMgr Unit-test
+
+
+Exmaple/Demo:
+1. demo.bin shows simple demo of Id-mgmt.
+
