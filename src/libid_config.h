@@ -10,7 +10,7 @@
  * TODO: Enhancement to expose overriding option for lib-user based on context
  */
 
-#define GC_TIMEOUT  60 // Number of seconds of Garbage collection
+#define GC_TIMEOUT  300 // Number of seconds of Garbage collection
 
 #define CHUNK_SIZE  32 // Fixed based on allocation_flag length
 

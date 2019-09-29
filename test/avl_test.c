@@ -9,6 +9,7 @@ void test_tree_insert_delete_query(void)
 {
     avl_node_t* root = NULL;
 
+    printf("%s: ", __func__);
     char* x = "hello";
     char* y = "world";
     assert(avl_lookup(root, 10) == NULL);
@@ -24,12 +25,14 @@ void test_tree_insert_delete_query(void)
     assert(strcmp(dt, "world") == 0);
     root = delete_node(root, 10);
     assert(avl_lookup(root, 10) == NULL);
+    printf(" PASSED\n");
 }
 
 void test_tree_delete_test(void)
 {
     avl_node_t* root = NULL;
 
+    printf("%s: ", __func__);
     root = insert_node(root, 10, "hello");
     root = insert_node(root, 4, "world");
     root = insert_node(root, 3, "check");
@@ -66,6 +69,7 @@ void test_tree_delete_test(void)
 
     dt = (char *)avl_lookup(root, 10);
     assert(strcmp(dt, "revert") == 0);
+    printf(" PASSED\n");
 }
 
 // TODO: test-cases for ht verification, balancing

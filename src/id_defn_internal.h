@@ -14,13 +14,14 @@ typedef struct id_instance_ {
 
 
 typedef struct chunk_instance_ {
-    uint32                  allocation_flag;
+    uint32                  avail_mask;
+    uint32                  gc_mask;
     uint32                  chunk_id;
     struct chunk_instance_  *next_chunk;
     id_instance_t           id_list[0];
 } chunk_instance_t;
 
-extern void chunk_mgr_init(void);
+extern void chunk_mgr_init(uint32);
 extern uint32 epoch_time();
 extern id_instance_t* get_free_id_inst();
 extern int32 mark_id_deleted(uint32 id);
