@@ -67,7 +67,7 @@ chunk_instance_t* allocate_chunk(uint32 chunk_id)
     ch->chunk_id = chunk_id;
     for (pos = 0; pos < CHUNK_SIZE; pos++)
     {
-        ch->id_list[pos].id = chunk_id * CHUNK_SIZE + pos + 1;
+        ch->id_list[pos].id = (chunk_id * CHUNK_SIZE) + pos + 1;
     }
 
     return ch;
@@ -145,7 +145,7 @@ uint32 check_free_id_count_internal(chunk_instance_t* ch_inst)
 //
 int32 mark_id_deleted(uint32 id)
 {
-    uint32 chunk_id = (id - 1) / CHUNK_SIZE;
+    uint32 chunk_id = (id - 1)/CHUNK_SIZE;
 
     chunk_instance_t* ch_inst = chunk_list_head;
     while ((ch_inst != NULL) && (ch_inst->chunk_id != chunk_id))
@@ -158,7 +158,14 @@ int32 mark_id_deleted(uint32 id)
         return ERROR; // error condition
     }
     uint32 pos = (id - 1) % CHUNK_SIZE;
-    ch_inst->allocation_flag |= 1 << (pos - 1);
+    if (ch_inst->id_list[pos].ref_count > 0) {
+        ch_inst->id_list[pos].ref_count--;
+        if (ch_inst->id_list[pos].ref_count == 0) // not referenced anymore
+        {
+            ch_inst->id_list[pos].deleted_at = epoch_time();
+            ch_inst->allocation_flag |= 1 << pos;
+        }
+    }
     return SUCCESS;
 }
 
@@ -167,8 +174,7 @@ int32 mark_id_deleted(uint32 id)
 //
 int32 mark_id_assigned(uint32 id)
 {
-    uint32 chunk_id = (id - 1) / CHUNK_SIZE;
-    printf("Looking for chunk-id:%d\n", chunk_id);
+    uint32 chunk_id = (id - 1)/CHUNK_SIZE;
 
     chunk_instance_t* ch_inst = chunk_list_head;
     while ((ch_inst != NULL) && (ch_inst->chunk_id != chunk_id))
@@ -180,11 +186,9 @@ int32 mark_id_assigned(uint32 id)
     {
         return ERROR; // error condition
     }
-    printf("Found chunk with id=%d\n", ch_inst->chunk_id);
     uint32 pos = (id - 1) % CHUNK_SIZE;
-    printf("For id=%d, marking pos=%d as 0. Current=0x%x\n", 
-            id, pos, ch_inst->allocation_flag);
-    ch_inst->allocation_flag ^= 1 << pos;
-    printf("After=0x%x\n", ch_inst->allocation_flag);
+    ch_inst->allocation_flag &= ~(1 << pos);
+    ch_inst->id_list[pos].ref_count++;
+    ch_inst->id_list[pos].deleted_at = 0;
     return SUCCESS;
 }

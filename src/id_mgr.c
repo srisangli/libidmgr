@@ -26,7 +26,7 @@ uint32 create_id(data_ptr user_data)
     {
         // Id already assigned for this user_data
         id_instance_t* id_inst = (id_instance_t *) node->key_data;
-        id_inst->ref_count++;
+        mark_id_assigned(id_inst->id);
         return id_inst->id;
     }
 
@@ -38,22 +38,17 @@ uint32 create_id(data_ptr user_data)
         return ERROR;
     }
 
-    new_id_inst->ref_count++;
     new_id_inst->user_data = user_data;
     mark_id_assigned(new_id_inst->id);
 
 
     // Now, insert this new_id_inst into id_index_tree
-    avl_node_t* new_id_node = calloc(sizeof(avl_node_t), 1);
-    new_id_node->key = new_id_inst->id;
-    new_id_node->key_data = new_id_inst;
-    id_index_tree = insert_node(id_index_tree, new_id_node);
+    id_index_tree = insert_node(id_index_tree, 
+                                (ulong)new_id_inst->id, (data_ptr)new_id_inst);
 
     // Now, insert this new_id_inst into data_index_tree;
-    avl_node_t* new_data_node = calloc(sizeof(avl_node_t), 1);
-    new_data_node->key = (ulong) user_data;
-    new_data_node->key_data = new_id_inst;
-    data_index_tree = insert_node(data_index_tree, new_data_node);
+    data_index_tree = insert_node(data_index_tree, 
+                                  (ulong)user_data, (data_ptr)new_id_inst);
 
     return new_id_inst->id;
 }
@@ -73,22 +68,20 @@ int32 delete_id(uint32 id)
         // this id is already deleted. ignoring duplicate deletes
         return SUCCESS;
     }
-    id_inst->ref_count--;
+    // Do some book keeping and mark for garbage collection
+
+    // 1. Update the corresponding chunk allocation_flag
+    mark_id_deleted(id_inst->id);
     if (id_inst->ref_count > 0) {
         // non-zero ref-count, no further processing required
         return SUCCESS;
     }
-    // Do some book keeping and mark for garbage collection
 
-    // 1. remove from data_index_tree
-    data_index_tree = delete_node(data_index_tree, id_inst->user_data);
+    // 2. remove from data_index_tree
+    data_index_tree = delete_node(data_index_tree, (ulong)id_inst->user_data);
 
-    // 2. Clear pointer to user-data and set deleted_at for current-time
+    // 3. Clear pointer to user-data and set deleted_at for current-time
     id_inst->user_data = NULL; // clear-up
-    id_inst->deleted_at = epoch_time();
-
-    // 3. Update the corresponding chunk allocation_flag
-    mark_id_deleted(id_inst->id);
 
     return SUCCESS;
 }
