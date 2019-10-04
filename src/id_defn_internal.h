@@ -6,7 +6,7 @@
 #include <defs.h>
 
 typedef struct id_instance_ {
-    data_ptr    user_data;
+    intptr_t    user_data;
     uint32      ref_count;
     uint64      deleted_at;
     uint32      id;

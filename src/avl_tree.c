@@ -1,6 +1,7 @@
 
-#include  <stdlib.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <defs.h>
 #include "avl.h"
 
@@ -22,7 +23,7 @@ uint32 get_balance(avl_node_t *n)
 //
 // API to insert a key, key_data into given avl-tree (given parent)
 //
-avl_node_t* insert_node(avl_node_t* parent_node, ulong key, data_ptr key_data)
+avl_node_t* insert_node(avl_node_t* parent_node, intptr_t key, intptr_t key_data)
 {
     if (parent_node == NULL) {
         avl_node_t* new_node = calloc(sizeof(avl_node_t), 1);
@@ -60,7 +61,7 @@ avl_node_t* min_key_node(avl_node_t* node)
 //
 // API to delete a node given key
 //
-avl_node_t* delete_node(avl_node_t* parent_node, ulong key) 
+avl_node_t* delete_node(avl_node_t* parent_node, intptr_t key) 
 {
     if (parent_node == NULL)
     {
@@ -112,10 +113,10 @@ avl_node_t* delete_node(avl_node_t* parent_node, ulong key)
 //
 // API to lookup key (and key-data), given key
 //
-data_ptr avl_lookup(avl_node_t* parent_node, ulong key)
+intptr_t avl_lookup(avl_node_t* parent_node, intptr_t key)
 {
     if (parent_node == NULL)
-        return NULL;
+        return (intptr_t)NULL;
 
     if (parent_node->key == key)
         return parent_node->key_data;

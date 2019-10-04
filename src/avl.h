@@ -5,18 +5,18 @@
 #include <defs.h>
 
 typedef struct avl_node_ {
-    ulong               key;
-    data_ptr            key_data;
+    intptr_t            key;
+    intptr_t            key_data;
     uint32              height;
     struct avl_node_    *left;
     struct avl_node_    *right;
 } avl_node_t;
 
 extern avl_node_t* insert_node(avl_node_t* parent_node, 
-                               ulong key, data_ptr key_data);
+                               intptr_t key, intptr_t key_data);
 
-extern avl_node_t* delete_node(avl_node_t* parent_node, ulong key);
+extern avl_node_t* delete_node(avl_node_t* parent_node, intptr_t key);
 
-extern data_ptr avl_lookup(avl_node_t* parent_node, ulong key);
+extern intptr_t avl_lookup(avl_node_t* parent_node, intptr_t key);
 
 #endif
